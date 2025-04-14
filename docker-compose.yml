@@ -1,0 +1,11 @@
+version: '3.7'
+
+services:
+  instagramDB:
+    container_name: instagramDB
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_PASSWORD=root
+      - POSTGRES_USER=admin
+    image: postgres:15.3-alpine
