@@ -1,9 +1,9 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../../config/db');
-const User = require('../auth/User');  // Подключаем модель User
+const User = require('../auth/User');
 
 const Post = sequelize.define('Post', {
-  image_url: { // Используем image_url, как в миграции
+  image_url: {
     type: DataTypes.STRING,
     allowNull: false,
   },
@@ -11,12 +11,12 @@ const Post = sequelize.define('Post', {
     type: DataTypes.STRING,
     allowNull: true,
   },
-  userId: { // Связь с пользователем
+  userId: {
     type: DataTypes.INTEGER,
     allowNull: false,
   }
 }, {
-  timestamps: true,  // createdAt и updatedAt включены
+  timestamps: true,
 });
 
 Post.belongsTo(User, { foreignKey: 'userId', as: 'user' });

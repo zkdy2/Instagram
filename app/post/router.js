@@ -1,8 +1,19 @@
 const express = require('express');
 const router = express.Router();
-const { createPost } = require('./controller');
+const {
+  createPost,
+  getMyPosts,
+  getAllPosts,
+  getPostById,
+  deletePost
+} = require('./controller');
 
-// POST-запрос для создания поста
-router.post('/api/posts', createPost);
+const authenticate = require('../auth/authMiddleware'); 
+
+router.post('/api/posts', authenticate, createPost);
+router.get('/api/posts/my', authenticate, getMyPosts);
+router.get('/api/posts', getAllPosts);
+router.get('/api/posts/:id', getPostById);
+router.delete('/api/posts/:id', authenticate, deletePost);
 
 module.exports = router;

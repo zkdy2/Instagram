@@ -1,5 +1,5 @@
 const { DataTypes } = require('sequelize')
-const sequelize = require('../../config/db') //импортируйте настройки подключения к базе данных
+const sequelize = require('../../config/db') 
 
 const User = sequelize.define('User', {
     email: {
