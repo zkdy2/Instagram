@@ -49,7 +49,7 @@ const deletePost = async (req, res) => {
     res.status(500).json({ error: 'Ошибка при удалении поста' });
   }
 };
-
+  //Создать пост
 const createPost = async (req, res) => {
   try {
     const { image_url, description } = req.body;
@@ -72,10 +72,34 @@ const createPost = async (req, res) => {
   }
 };
 
+// обновить пост
+const updatePost = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { image_url, description } = req.body;
+
+    const post = await Post.findByPk(id);
+    if (!post) return res.status(404).json({ error: 'Пост не найден' });
+
+    if (post.userId !== req.user.id) {
+      return res.status(403).json({ error: 'Нет доступа к редактированию этого поста' });
+    }
+
+    if (image_url !== undefined) post.image_url = image_url;
+    if (description !== undefined) post.description = description;
+
+    await post.save();
+    res.json(post);
+  } catch (err) {
+    res.status(500).json({ error: 'Ошибка при обновлении поста' });
+  }
+};
+
 module.exports = {
   createPost,
   getMyPosts,
   getAllPosts,
   getPostById,
-  deletePost
+  deletePost,
+  updatePost
 };
