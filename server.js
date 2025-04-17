@@ -14,6 +14,7 @@ require('./app/auth/passport');
 app.use(require("./app/auth/routes"));
 app.use(require("./app/post/router"));
 app.use(require("./app/story/router"));
+app.use(require("./app/Follower/router"));
 
 app.listen(3000, () => {
   console.log("Server is listen on PORT");
