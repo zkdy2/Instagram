@@ -35,36 +35,6 @@ exports.addStory = async (req, res) => {
   }
 };
 
-// exports.deleteStory = async (req, res) => {
-//   const { story_id, username } = req.body;
-
-//   try {
-//     const user = await User.findOne({ where: { username } });
-//     if (!user) {
-//       return res.status(404).json({ message: 'User not found' });
-//     }
-
-//     const story = await Story.findByPk(story_id, {
-//       include: [{ model: User, as: 'user' }]
-//     });
-//     if (!story) {
-//       return res.status(404).json({ message: 'Story not found' });
-//     }
-//     if (!story.user) {
-//       return res.status(404).json({ message: 'User for this story not found' });
-//     }
-//     if (story.user.id !== user.id) {
-//       return res.status(403).json({ message: 'User not authorized to delete this story' });
-//     }
-
-//     await story.destroy();
-//     res.status(200).json({ message: 'Story deleted successfully' });
-//   } catch (error) {
-//     console.error('Error deleting story:', error);
-//     res.status(500).json({ message: 'Error deleting story', error: error.message || error });
-//   }
-// };
-
 // Пример с использованием параметра URL для story_id
 exports.deleteStory = async (req, res) => {
     const { story_id } = req.params;  // Получаем story_id из параметров URL

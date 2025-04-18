@@ -6,7 +6,8 @@ const {
   getAllPosts,
   getPostById,
   deletePost,
-  updatePost 
+  updatePost,
+  getPostsByUsername  
 } = require('./controller');
 
 const authenticate = require('../auth/authMiddleware');
@@ -15,6 +16,7 @@ const authenticate = require('../auth/authMiddleware');
 
 router.post('/api/posts', authenticate, createPost);
 router.get('/api/posts/my', authenticate, getMyPosts);
+router.get('/api/posts/byUsername/:username', getPostsByUsername);
 router.get('/api/posts', getAllPosts);
 router.get('/api/posts/:id', getPostById);
 router.delete('/api/posts/:id', authenticate, deletePost);

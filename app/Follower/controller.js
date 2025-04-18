@@ -62,3 +62,61 @@ exports.unfollowUser = async (req, res) => {
       res.status(500).json({ message: 'Internal server error', error });
     }
   };
+
+
+//подписчиков пользователя
+exports.getFollowers = async (req, res) => {
+  const { username } = req.params;
+
+  try {
+    const user = await User.findOne({ where: { username } });
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    const followers = await Follow.findAll({
+      where: { user_id: user.id },
+      include: [{
+        model: User,
+        as: 'follower',
+        attributes: ['id', 'username', 'email']
+      }]
+    });
+
+    const result = followers.map(f => f.follower);
+    res.json(result);
+  } catch (error) {
+    console.error('Error fetching followers:', error);
+    res.status(500).json({ message: 'Internal server error', error });
+  }
+};
+
+//подписок пользователя
+exports.getFollowing = async (req, res) => {
+  const { username } = req.params;
+
+  try {
+    const user = await User.findOne({ where: { username } });
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    const following = await Follow.findAll({
+      where: { follower_id: user.id },
+      include: [{
+        model: User,
+        as: 'user',
+        attributes: ['id', 'username', 'email']
+      }]
+    });
+
+    const result = following.map(f => f.user);
+    res.json(result);
+  } catch (error) {
+    console.error('Error fetching following:', error);
+    res.status(500).json({ message: 'Internal server error', error });
+  }
+};
+

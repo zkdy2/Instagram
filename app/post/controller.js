@@ -1,5 +1,5 @@
 const Post = require('./Post');
-
+const User = require('../auth/User');
 
 // 1. Получить все посты авторизованного пользователя
 const getMyPosts = async (req, res) => {
@@ -96,11 +96,34 @@ const updatePost = async (req, res) => {
   }
 };
 
+
+const getPostsByUsername = async (req, res) => {
+  try {
+    const { username } = req.params;
+
+    const user = await User.findOne({ where: { username } });
+    if (!user) {
+      return res.status(404).json({ error: 'Пользователь не найден' });
+    }
+
+    const posts = await Post.findAll({
+      where: { userId: user.id },
+      order: [['createdAt', 'DESC']]
+    });
+
+    res.json(posts);
+  } catch (err) {
+    console.error('Ошибка при получении постов по username:', err);
+    res.status(500).json({ error: 'Ошибка сервера при получении постов' });
+  }
+};
+
 module.exports = {
   createPost,
   getMyPosts,
   getAllPosts,
   getPostById,
   deletePost,
-  updatePost
+  updatePost,
+  getPostsByUsername
 };
