@@ -1,5 +1,5 @@
 const Post = require('./Post');
-const User = require('../auth/User');
+
 
 // 1. Получить все посты авторизованного пользователя
 const getMyPosts = async (req, res) => {
@@ -96,40 +96,11 @@ const updatePost = async (req, res) => {
   }
 };
 
-const getPostsByUsername = async (req, res) => {
-  try {
-    const { username } = req.params;
-    console.log(`Поиск пользователя с username: ${username}`);
-    
-    // Найти пользователя по username
-    const user = await User.findOne({ where: { username } });
-    
-    if (!user) {
-      console.log(`Пользователь с username "${username}" не найден`);
-      return res.status(404).json({ error: 'Пользователь не найден' });
-    }
-
-    console.log(`Пользователь найден. ID: ${user.id}`);
-    
-    // Найти все посты этого пользователя
-    const posts = await Post.findAll({ where: { userId: user.id } });
-    console.log(`Найдено ${posts.length} постов`);
-
-    res.json(posts);
-  } catch (err) {
-    console.error('Ошибка при получении постов пользователя:', err);
-    res.status(500).json({ error: 'Ошибка при получении постов пользователя' });
-  }
-};
-
-
-
 module.exports = {
   createPost,
   getMyPosts,
   getAllPosts,
   getPostById,
   deletePost,
-  updatePost,
-  getPostsByUsername
+  updatePost
 };
