@@ -134,8 +134,30 @@ const updateUserProfile = async (req, res) => {
   }
 };
 
+
+const getUserByUsername = async (req, res) => {
+  try {
+    const { username } = req.params;
+
+    const user = await User.findOne({
+      where: { username },
+      attributes: ['id', 'email', 'phone', 'full_name', 'username'], // не возвращаем пароль
+    });
+
+    if (!user) {
+      return res.status(404).json({ error: "Пользователь не найден" });
+    }
+
+    res.json(user);
+  } catch (error) {
+    console.error("Ошибка при получении пользователя:", error);
+    res.status(500).json({ error: "Ошибка сервера при получении пользователя" });
+  }
+};
+
 module.exports = {
   signUp,
   signIn,
   updateUserProfile,
+  getUserByUsername
 };
