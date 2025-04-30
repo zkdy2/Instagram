@@ -12,6 +12,8 @@ module.exports = {
         dialect: 'postgres',
         dialectOptions: {
             ssl: {
+                require: true,
+                rejectUnauthorized: false,
                 ca: fs.readFileSync(path.resolve("config", "ca-certificate.crt")).toString()
             }
         }

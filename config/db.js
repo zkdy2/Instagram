@@ -29,6 +29,7 @@ if (process.env.NODE_ENV === "production") {
         {
             host: dbConf.development.host,
             dialect: dbConf.development.dialect,
+            port: dbConf.development.port,
             logging: false
         }
     );
@@ -38,7 +39,7 @@ if (process.env.NODE_ENV === "production") {
 sequelize
     .authenticate()
     .then(() => {
-        console.log('✅ Connection to database has been established successfully.');
+        console.log('✅ Connection prod to database has been established successfully.');
     })
     .catch((error) => {
         console.error('❌ Unable to connect to the database:', error);

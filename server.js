@@ -1,3 +1,4 @@
+const updateFirewall = require('./scripts/updateFirewall')
 const express = require("express");
 const logger = require("morgan");
 const passport = require("passport");
