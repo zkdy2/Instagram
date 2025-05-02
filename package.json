@@ -5,7 +5,8 @@
   "scripts": {
     "start": "nodemon server.js",
     "dev": "nodemon server.js",
-    "prod": "node ./scripts/updateFirewall.js"
+    "prod": "npm run updateFirewall && node server.js",
+    "updateFirewall": "node ./scripts/updateFirewall.js"
   },
   "author": "Daniyar",
   "license": "ISC",
