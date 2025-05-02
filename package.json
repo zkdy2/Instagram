@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "main": "server.js",
   "scripts": {
-    "start": "nodemon server.js",
-    "dev": "nodemon server.js",
+    "start": "node server.js",
+    "dev": "node server.js",
     "prod": "node ./scripts/updateFirewall.js && node server.js"
   },
   "author": "Daniyar",
