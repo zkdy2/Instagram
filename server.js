@@ -18,6 +18,10 @@ app.use(require("./app/story/router"));
 app.use(require("./app/Follower/router"));
 app.use(require("./app/like/router"));
 
-app.listen(3000, () => {
+// app.listen(3000, () => {
+//   console.log("Server is listen on PORT");
+// });
+
+app.listen(3000, '0.0.0.0', () => {
   console.log("Server is listen on PORT");
 });
