@@ -5,7 +5,8 @@
   "scripts": {
     "start": "node server.js",
     "dev": "node server.js",
-    "prod": "node ./scripts/updateFirewall.js && cross-env NODE_ENV=production node server.js"
+    "prod": "node ./scripts/updateFirewall.js && cross-env NODE_ENV=production node server.js",
+    "start:prod": "cross-env NODE_ENV=production node server.js"
   },
   "author": "Daniyar",
   "license": "ISC",
