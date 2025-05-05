@@ -1,12 +1,11 @@
 const path = require("path");
 const axios = require("axios");
 const fs = require("fs");
-require('dotenv').config();
-
+require("dotenv").config();
 
 const FIREWALL_ID = process.env.FIREWALL_ID;
 const DO_API_TOKEN = process.env.DO_API_TOKEN;
-const FIREWALL_PORT = process.env.FIREWALL_PORT;
+const FIREWALL_PORT = process.env.FIREWALL_PORT || "3000";
 const LAST_IP_PATH = path.join(__dirname, "../last_ip.json");
 
 const getCurrentIp = async () => {
@@ -17,12 +16,8 @@ const getCurrentIp = async () => {
 const getFirewall = async () => {
   try {
     const res = await axios.get(`https://api.digitalocean.com/v2/firewalls/${FIREWALL_ID}`, {
-      headers: {
-        Authorization: `Bearer ${DO_API_TOKEN}`,
-      },
+      headers: { Authorization: `Bearer ${DO_API_TOKEN}` },
     });
-    console.log("📦 Получен фаервол:");
-    console.dir(res.data.firewall, { depth: null });
     return res.data.firewall;
   } catch (err) {
     console.error("❌ Ошибка при получении фаервола:", err.response?.data || err.message);
@@ -33,8 +28,8 @@ const getFirewall = async () => {
 const updateFirewall = async (currentIp, oldIp) => {
   const firewall = await getFirewall();
 
-  const newInboundRules = firewall.inbound_rules.filter(
-    rule => !(rule.sources?.addresses?.includes(`${oldIp}/32`))
+  const newInboundRules = firewall.inbound_rules.filter(rule =>
+    !(rule.sources?.addresses?.includes(`${oldIp}/32`))
   );
 
   newInboundRules.push({
@@ -53,22 +48,23 @@ const updateFirewall = async (currentIp, oldIp) => {
     tags: firewall.tags,
   };
 
-  console.log("📤 Отправляем обновлённые правила:");
-  console.dir(updatedData, { depth: null });
-
-  await axios.put(
-    `https://api.digitalocean.com/v2/firewalls/${FIREWALL_ID}`,
-    updatedData,
-    {
-      headers: {
-        Authorization: `Bearer ${DO_API_TOKEN}`,
-        "Content-Type": "application/json",
-      },
-    }
-  );
-
-  fs.writeFileSync(LAST_IP_PATH, JSON.stringify({ ip: currentIp }, null, 2));
-  console.log(`[✔️] IP успешно обновлён в firewall: ${currentIp}`);
+  try {
+    await axios.put(
+      `https://api.digitalocean.com/v2/firewalls/${FIREWALL_ID}`,
+      updatedData,
+      {
+        headers: {
+          Authorization: `Bearer ${DO_API_TOKEN}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    fs.writeFileSync(LAST_IP_PATH, JSON.stringify({ ip: currentIp }, null, 2));
+    console.log(`[✔️] IP успешно обновлён в firewall: ${currentIp}`);
+  } catch (err) {
+    console.error("❌ Ошибка при обновлении фаервола:", err.response?.data || err.message);
+    throw err;
+  }
 };
 
 const main = async () => {
@@ -80,13 +76,17 @@ const main = async () => {
   }
 
   if (currentIp !== oldIp) {
-    console.log(`IP изменился: ${oldIp || "(первый запуск)"} → ${currentIp}`);
+    console.log(`🔁 IP изменился: ${oldIp || "(первый запуск)"} → ${currentIp}`);
     await updateFirewall(currentIp, oldIp);
   } else {
-    console.log("IP не изменился.");
+    console.log("ℹ️ IP не изменился.");
   }
 };
 
-main().catch(err => {
-  console.error("❌ Ошибка:", err.response?.data || err.message);
-});
+if (require.main === module) {
+  main().catch(err => {
+    console.error("❌ Общая ошибка:", err.response?.data || err.message);
+  });
+}
+
+module.exports = main;

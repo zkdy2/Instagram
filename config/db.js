@@ -1,48 +1,30 @@
-const { Sequelize } = require('sequelize');
-const fs = require('fs');
-const path = require('path');
-const dbConf = require('./config');
+const { Sequelize } = require("sequelize");
+const dbConf = require("./config");
 
-let sequelize;
-if (process.env.NODE_ENV === "production") {
-    sequelize = new Sequelize(
-        dbConf.production.database,
-        dbConf.production.username,
-        dbConf.production.password,
-        {
-            host: dbConf.production.host,
-            dialect: dbConf.production.dialect,
-            port: dbConf.production.port,
-            logging: false,
-            dialectOptions: {
-                ssl: {
-                    ca: fs.readFileSync(path.resolve("config", "ca-certificate.crt")).toString()
-                }
-            }
-        }
-    );
-} else {
-    sequelize = new Sequelize(
-        dbConf.development.database,
-        dbConf.development.username,
-        dbConf.development.password,
-        {
-            host: dbConf.development.host,
-            dialect: dbConf.development.dialect,
-            port: dbConf.development.port,
-            logging: false
-        }
-    );
-}
+const isProd = process.env.NODE_ENV === "production";
 
-// Проверка подключения
+const config = isProd ? dbConf.production : dbConf.development;
+
+const sequelize = new Sequelize(
+  config.database,
+  config.username,
+  config.password,
+  {
+    host: config.host,
+    port: config.port,
+    dialect: config.dialect,
+    logging: false,
+    dialectOptions: config.dialectOptions,
+  }
+);
+
 sequelize
-    .authenticate()
-    .then(() => {
-        console.log('✅ Connection prod to database has been established successfully.');
-    })
-    .catch((error) => {
-        console.error('❌ Unable to connect to the database:', error);
-    });
+  .authenticate()
+  .then(() => {
+    console.log(`✅ Connected to ${isProd ? "production" : "development"} database`);
+  })
+  .catch((err) => {
+    console.error("❌ Unable to connect to the database:", err.message);
+  });
 
 module.exports = sequelize;

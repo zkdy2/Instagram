@@ -13,10 +13,7 @@ module.exports = {
     dialectOptions: {
       ssl: {
         require: true,
-        rejectUnauthorized: false,
-        ca: fs
-          .readFileSync(path.resolve(__dirname, "ca-certificate.crt"))
-          .toString(),
+        rejectUnauthorized: false, // важно для DO
       },
     },
   },
