@@ -9,8 +9,13 @@ const FIREWALL_PORT = process.env.FIREWALL_PORT || "3000";
 const LAST_IP_PATH = path.join(__dirname, "../last_ip.json");
 
 const getCurrentIp = async () => {
-  const res = await axios.get("https://api.ipify.org");
-  return res.data.trim();
+  try {
+    const res = await axios.get("https://api.ipify.org");
+    return res.data.trim();
+  } catch (err) {
+    console.error("❌ Ошибка при получении текущего IP:", err.response?.data || err.message);
+    throw err;
+  }
 };
 
 const getFirewall = async () => {
@@ -28,10 +33,12 @@ const getFirewall = async () => {
 const updateFirewall = async (currentIp, oldIp) => {
   const firewall = await getFirewall();
 
+  // Удаляем старое правило с предыдущим IP
   const newInboundRules = firewall.inbound_rules.filter(rule =>
     !(rule.sources?.addresses?.includes(`${oldIp}/32`))
   );
 
+  // Добавляем новое правило для текущего IP
   newInboundRules.push({
     protocol: "tcp",
     ports: FIREWALL_PORT,
@@ -71,10 +78,12 @@ const main = async () => {
   const currentIp = await getCurrentIp();
   let oldIp = "";
 
+  // Проверяем, существует ли файл с последним IP
   if (fs.existsSync(LAST_IP_PATH)) {
     oldIp = JSON.parse(fs.readFileSync(LAST_IP_PATH)).ip;
   }
 
+  // Если IP изменился, обновляем фаервол
   if (currentIp !== oldIp) {
     console.log(`🔁 IP изменился: ${oldIp || "(первый запуск)"} → ${currentIp}`);
     await updateFirewall(currentIp, oldIp);
